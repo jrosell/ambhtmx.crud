@@ -37,4 +37,4 @@ RUN R -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', 'h
 COPY . .
 
 EXPOSE 7860
-CMD R -e "print(Sys.getenv('GITHUB_PAT')); remotes::install_github(c('devOpifex/ambiorix', 'jrosell/ambhtmx',  'devOpifex/scilis', 'devOpifex/signaculum')); options(ambiorix.host='0.0.0.0', 'ambiorix.port'=7860);source('app.R')"
+CMD R -e "print(Sys.getenv('GITHUB_PAT')); bspm::disable(); remotes::install_github(c('devOpifex/ambiorix', 'jrosell/ambhtmx',  'devOpifex/scilis', 'devOpifex/signaculum')); bspm::enable(); options(ambiorix.host='0.0.0.0', 'ambiorix.port'=7860);source('app.R')"
