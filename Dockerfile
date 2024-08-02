@@ -42,4 +42,4 @@ COPY . .
 RUN chmod -R 755 /workspace
 
 EXPOSE 7860
-CMD R -e "options(bspm.sudo = TRUE); print(nchar(Sys.getenv('GITHUB_PAT'))); remotes::install_github(c('devOpifex/ambiorix', 'devOpifex/scilis', 'devOpifex/signaculum')); remotes::install_github('jrosell/ambhtmx', force = TRUE); source('app.R'); "
+CMD R -e "options(bspm.sudo = TRUE); print(nchar(Sys.getenv('GITHUB_PAT'))); remotes::install_github(c('devOpifex/ambiorix', 'devOpifex/scilis', 'devOpifex/signaculum')); remotes::install_github('jrosell/ambhtmx', force = TRUE); bspm::enable(); source('app.R'); "
