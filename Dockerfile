@@ -8,32 +8,39 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     PATH=/usr/local/cargo/bin:$PATH
 
 RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
-        gcc \
-        libc6-dev \
-        wget \
-        ; \
-    \
-    url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
-    wget "$url"; \
-    chmod +x rustup-init; \
-    ./rustup-init -y --no-modify-path --default-toolchain beta --default-host x86_64-unknown-linux-gnu; \
-    rm rustup-init; \
-    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-    rustup --version; \
-    cargo --version; \
-    rustc --version; \
-    \
-    apt-get remove -y --auto-remove \
-        wget \
-        ; \
-    rm -rf /var/lib/apt/lists/*;
-    
-RUN R -e "options(bspm.sudo = TRUE); install.packages(c('htmltools', 'tidyverse', 'zeallot', 'rlang', 'glue', 'this.path', 'DBI', 'pool', 'RSQLite', 'remotes', 'promises', 'assertthat', 'log')); bspm::enable();"
+        apt-get update; \
+        apt-get install -y --no-install-recommends \
+                git \
+                sudo \
+                ca-certificates \
+                gcc \
+                libc6-dev \
+                wget \
+                && sed -i.bkp -e 's/%sudo\s\+ALL=(ALL\(:ALL\)\?)\s\+ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers \
+                && sed -i -e '/^suppressMessages(bspm::enable())$/i options(bspm.sudo=TRUE)' /etc/R/Rprofile.site \
+                ; \
+        \
+        url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+        wget "$url"; \
+        chmod +x rustup-init; \
+        ./rustup-init -y --no-modify-path --default-toolchain beta --default-host x86_64-unknown-linux-gnu; \
+        rm rustup-init; \
+        chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+        rustup --version; \
+        cargo --version; \
+        rustc --version; \
+        \
+        apt-get remove -y --auto-remove \
+            wget \
+            ; \
+        rm -rf /var/lib/apt/lists/*;
 
-RUN R -e "options(bspm.sudo = TRUE); install.packages('b64', repos = c('https://extendr.r-universe.dev', 'https://cloud.r-project.org')); install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', 'https://cloud.r-project.org')); bspm::enable(); "
+RUN install2.r --error -s --deps TRUE \
+        htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log
+RUN Rscript -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', getOption('repos')))" 
+RUN Rscript -e "install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', getOption('repos')))" 
+RUN installGithub.r \
+        devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
 
 # RUN adduser newuser
 # COPY --chown=newuser . .
@@ -42,4 +49,4 @@ COPY . .
 RUN chmod -R 755 /workspace
 
 EXPOSE 7860
-CMD R -e "options(bspm.sudo = TRUE); print(nchar(Sys.getenv('GITHUB_PAT'))); remotes::install_github(c('devOpifex/ambiorix', 'devOpifex/scilis', 'devOpifex/signaculum')); remotes::install_github('jrosell/ambhtmx', force = TRUE); bspm::enable(); source('app.R'); "
+CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); source('app.R'); "
