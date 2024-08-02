@@ -131,7 +131,7 @@ tibble(name = "Holi", content = "Guapi.") |>
   items$add_row() -> last_id
 items$read_rows() |> print()
 
-cat("\nDelete last item:\n")
+cat(glue("\nDelete last item id={last_id}:\n"))
 items$delete_row(id = last_id)
 items$read_rows() |> print()
 
