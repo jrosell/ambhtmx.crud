@@ -1,2 +1,2 @@
 .Renviron
-.sqlite
+*.sqlite
