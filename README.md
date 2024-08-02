@@ -58,4 +58,10 @@ docker rmi ID
 
 ## Troubleshooting
 
+If you want to see the logs:
+
+```
+docker build -f Dockerfile  --no-cache --progress=plain -t ambhtmx-image . 2>&1 | tee build.log
+```
+
 Check the [known issues](https://github.com/jrosell/ambhtmx/issues), and if you have another issue? Please, [let me know](https://github.com/jrosell/ambhtmx/issues).

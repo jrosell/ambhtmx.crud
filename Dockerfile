@@ -1,12 +1,11 @@
 ARG GITHUB_PAT
 FROM rocker/r2u:22.04
 
-WORKDIR /workspace
-
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
 
+# Install system packages
 RUN set -eux; \
         apt-get update; \
         apt-get install -y --no-install-recommends \
@@ -34,19 +33,31 @@ RUN set -eux; \
             wget \
             ; \
         rm -rf /var/lib/apt/lists/*;
-
+        
+# Install R packages
 RUN install2.r --error -s --deps TRUE \
-        htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log
+htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log
 RUN Rscript -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', getOption('repos')))" 
 RUN Rscript -e "install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', getOption('repos')))" 
 RUN installGithub.r \
-        devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
+devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
 
-# RUN adduser newuser
-# COPY --chown=newuser . .
 
-COPY . .
-RUN chmod -R 755 /workspace
+# Prepare a user
+RUN useradd --create-home --shell /bin/bash user
+USER user
+ENV HOME=/home/user \
+	PATH=/home/user/.local/bin:$PATH
+WORKDIR $HOME/app
+COPY --chown=user . $HOME/app
 
+# Entry
 EXPOSE 7860
 CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); source('app.R'); "
+
+
+
+
+
+
+
