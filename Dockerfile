@@ -1,3 +1,4 @@
+ARG GITHUB_PAT
 FROM rocker/r2u:22.04
 
 WORKDIR /workspace
@@ -30,11 +31,12 @@ RUN set -eux; \
         ; \
     rm -rf /var/lib/apt/lists/*;
     
-RUN R -e "install.packages(c('htmltools', 'tidyverse', 'zeallot', 'rlang', 'glue', 'this.path', 'DBI', 'pool', 'RSQLite', 'remotes'))"
+RUN R -e " options(bspm.sudo = TRUE); install.packages(c('htmltools', 'tidyverse', 'zeallot', 'rlang', 'glue', 'this.path', 'DBI', 'pool', 'RSQLite', 'remotes', 'promises', 'assertthat', 'log'))"
 
-RUN R -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', 'https://cloud.r-project.org')); install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', 'https://cloud.r-project.org'))"
+RUN R -e "options(bspm.sudo = TRUE);install.packages('b64', repos = c('https://extendr.r-universe.dev', 'https://cloud.r-project.org')); install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', 'https://cloud.r-project.org'))"
 
-COPY . .
+RUN adduser newuser
+COPY --chown=newuser . .
 
 EXPOSE 7860
-CMD R -e "print(Sys.getenv('GITHUB_PAT')); bspm::disable(); remotes::install_github(c('devOpifex/ambiorix', 'jrosell/ambhtmx',  'devOpifex/scilis', 'devOpifex/signaculum')); bspm::enable(); options(ambiorix.host='0.0.0.0', 'ambiorix.port'=7860);source('app.R')"
+CMD R -e "print(length(Sys.getenv('GITHUB_PAT'))); options(bspm.sudo = TRUE); remotes::install_github(c('devOpifex/ambiorix', 'jrosell/ambhtmx',  'devOpifex/scilis', 'devOpifex/signaculum')); bspm::enable(); options(ambiorix.host='0.0.0.0', 'ambiorix.port'=7860);source('app.R')"

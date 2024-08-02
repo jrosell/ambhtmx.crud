@@ -85,14 +85,19 @@ c(app, context, items) %<-%
 
 #' Authentication feature with secret cookies and .Renviron variables
 app$get("/login", \(req, res) {
-  process_login_get(req, res)
+  process_login_get(
+    req,
+    res,
+    login_url = str_replace(req$HTTP_HOST, "0.0.0.0", "127.0.0.1")
+  )
 })
 app$post("/login", \(req, res) {      
   process_login_post(
     req,
     res,
     user = Sys.getenv("AMBHTMX_USER"),
-    password = Sys.getenv("AMBHTMX_PASSWORD")
+    password = Sys.getenv("AMBHTMX_PASSWORD"),
+    login_url = str_replace(req$HTTP_HOST, "0.0.0.0", "127.0.0.1")
   )
 })
 app$get("/logout", \(req, res) {
