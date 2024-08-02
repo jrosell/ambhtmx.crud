@@ -74,9 +74,9 @@ render_row <- \(item) {
 counter <- 0
 c(app, context, items) %<-%
   ambhtmx_app(
-    "items.sqlite",
-    host = getOption("ambiorix.host"), 
-    port = getOption("ambiorix.port"),
+    dbname = getOption("ambiorix.dbname") %||% "items.sqlite",
+    host = getOption("ambiorix.host") %||% "127.0.0.1",
+    port = getOption("ambiorix.port")%||% "3000",
     value = tibble(
       id = character(1),
       name = character(1),
