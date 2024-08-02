@@ -11,6 +11,7 @@ RUN set -eux; \
         apt-get install -y --no-install-recommends \
                 git \
                 sudo \
+                sqlite3 \
                 ca-certificates \
                 gcc \
                 libc6-dev \
@@ -35,12 +36,10 @@ RUN set -eux; \
         rm -rf /var/lib/apt/lists/*;
         
 # Install R packages
-RUN install2.r --error -s --deps TRUE \
-htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log
+RUN install2.r --error -s --deps TRUE htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log here
 RUN Rscript -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', getOption('repos')))" 
 RUN Rscript -e "install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', getOption('repos')))" 
-RUN installGithub.r \
-devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
+RUN installGithub.r devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
 
 
 # Prepare a user
@@ -53,11 +52,7 @@ COPY --chown=user . $HOME/app
 
 # Entry
 EXPOSE 7860
-CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); source('app.R'); "
-
-
-
-
+CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); print(here::here()); ; tmp_file <- tempfile(); writeLines('Created', tmp_file); if (file.exists(tmp_file)) {unlink(tmp_file); print('Deleted')}; options('ambiorix.dbname'=paste0(tmp_file,".sqlite")); source('app.R'); "
 
 
 
