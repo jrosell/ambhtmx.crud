@@ -52,7 +52,7 @@ COPY --chown=user . $HOME/app
 
 # Entry
 EXPOSE 7860
-CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); print(here::here()); ; tmp_file <- tempfile(); print(tmp_file); writeLines('content', tmp_file); if (file.exists(tmp_file)) {unlink(tmp_file); print('Deleted')}; options('ambiorix.dbname'=paste0(tmp_file,'.sqlite')); print(getOption('ambiorix.dbname')); source('app.R'); "
+CMD R -e "print(nchar(Sys.getenv('GITHUB_PAT'))); print(here::here()); (tmp_file <- tempfile()); print(tmp_file); writeLines('content', tmp_file); if (file.exists(tmp_file)) {unlink(tmp_file); print('Deleted')}; options('ambiorix.dbname'=paste0(tmp_file,'.sqlite')); print(getOption('ambiorix.dbname')); source('app.R'); "
 
 
 
