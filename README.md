@@ -7,34 +7,55 @@ sdk: docker
 pinned: false
 ---
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+## Runing the example in Docker
 
-
-# Runing the example in Docker
-
-First, you can create the image and test the container in Docker:
+You may need to set some environment variables in the .Renviron file:
 
 ```
-docker build -f Dockerfile -t ambhtmx . \
-  && docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm ambhtmx
-```
+GITHUB_PAT=<an optional token to install github repos safely>
+AMBHTMX_USER=<your user>
+AMBHTMX_PASSWORD=<your password>
+AMBHTMX_SECRET=<a secret key to make cookies safer>
+AMBHTMX_PROTOCOL=http
+AMBHTMX_HOST=0.0.0.0
+AMBHTMX_PORT=7860
+````
 
-If you want to rerun the process, you may need to remove the previous containers and images:
+Then, you can create the ambhtmx-image and run the ambhtmx-container in Docker:
 
-```
-(docker container rm -f ambhtmx-container || true)\
-  && (docker rmi $(docker images --format '{{.Repository}}:{{.ID}}'| egrep 'ambhtmx' | cut -d':' -f2 | uniq) --force || true) \
-  && docker build -f Dockerfile -t ambhtmx . \
-  && docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm ambhtmx
-```
-
-
-If you need to read the output files from your host, run:
+If you have GNU Make installed in your Linux system, just run:
 
 ```
-docker build -f Dockerfile -t ambhtmx . \
-  && docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm -v $(pwd)/output:/workspace/output/:rw ambhtmx
+make
 ```
 
+If you prefer, you can do it step by step.
 
+1. Building the ambhtmx-image:
 
+```
+docker build -f Dockerfile -t ambhtmx-image .
+```
+
+2. Runing the ambhtmx-container:
+
+```
+docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm ambhtmx-image
+```
+
+3. Check the app on http://127.0.0.1:3000 or http://AMBHTMX_HOST:AMBHTMX_PORT :)
+
+4. Stoping and removing the ambhtmx-container:
+
+```
+docker container rm -f ambhtmx-container
+```
+
+5. Removing the image
+```
+docker images 'ambhtmx-image' -a -q
+docker rmi ID
+
+## Troubleshooting
+
+Check the [known issues](https://github.com/jrosell/ambhtmx/issues), and if you have another issue? Please, [let me know](https://github.com/jrosell/ambhtmx/issues).

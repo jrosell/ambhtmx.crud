@@ -1,3 +1,7 @@
+options(
+  'ambiorix.host'=Sys.getenv('AMBHTMX_HOST'),
+  'ambiorix.port'=Sys.getenv('AMBHTMX_PORT')
+)
 library(ambhtmx)
 # devtools::load_all()
 library(ambiorix)
@@ -87,21 +91,23 @@ c(app, context, items) %<-%
 app$get("/login", \(req, res) {
   process_login_get(
     req,
-    res,
-    login_url = str_replace(req$HTTP_HOST, "0.0.0.0", "127.0.0.1")
+    res
   )
 })
-app$post("/login", \(req, res) {      
+app$post("/login", \(req, res) {   
+  print(req$HTTP_HOST)
   process_login_post(
     req,
     res,
     user = Sys.getenv("AMBHTMX_USER"),
     password = Sys.getenv("AMBHTMX_PASSWORD"),
-    login_url = str_replace(req$HTTP_HOST, "0.0.0.0", "127.0.0.1")
   )
 })
 app$get("/logout", \(req, res) {
-  process_logout_get(req, res)
+  process_logout_get(
+    req,
+    res
+  )
 })
 app$use(\(req, res){
   process_loggedin_middleware(
@@ -147,7 +153,9 @@ items$read_rows() |> print()
 
 
 #' The main page
-app$get("/", \(req, res){  
+app$get("/", \(req, res){
+  # r <- process_loggedin_redirect(req, res)
+  # if(!is.null(r)) return(r)
   if (!req$loggedin) {    
     return(res$redirect("/login", status = 302L))
   }
