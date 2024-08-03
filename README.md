@@ -7,6 +7,8 @@ sdk: docker
 pinned: false
 ---
 
+**Work in progress: It's still not working.**
+
 ## Runing the example in Docker
 
 You may need to set some environment variables in the .Renviron file:
