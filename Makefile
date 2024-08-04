@@ -14,7 +14,11 @@ clean:
 		&& echo "Done"
 
 build:
-	docker build -f Dockerfile  --no-cache --progress=plain -t ambhtmx-image . 2>&1 | tee build.log
+	docker build -f Dockerfile --no-cache --progress=plain -t ambhtmx-image . 2>&1 | tee build.log
 
 run:
 	docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm ambhtmx-image
+
+secrets:
+	docker build --secret id=GITHUB_PAT,src=/run/secrets/GITHUB_PAT -f Dockerfile -t ambhtmx-image .  \
+		&& docker run --env-file=.Renviron -p 7860:7860 --name ambhtmx-container --rm ambhtmx-image 

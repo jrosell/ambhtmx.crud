@@ -43,11 +43,11 @@ RUN set -eux; \
         rm -rf /var/lib/apt/lists/*;
         
 # Install R packages
-RUN install2.r --error -s --deps TRUE htmltools tidyverse zeallot rlang glue this.path DBI pool RSQLite remotes promises assertthat log here
+RUN install2.r --error -s --deps TRUE htmltools tibble dplyr purrr rlang glue this.path DBI pool RSQLite remotes promises assertthat log here zeallot dbplyr stringr tidyverse
 RUN Rscript -e "install.packages('b64', repos = c('https://extendr.r-universe.dev', getOption('repos')))" 
 RUN Rscript -e "install.packages('uwu', repos = c('https://josiahparry.r-universe.dev', getOption('repos')))" 
-RUN installGithub.r devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
-
+RUN --mount=type=secret,id=GITHUB_PAT GITHUB_PAT=$(cat /run/secrets/GITHUB_PAT) \
+    installGithub.r devOpifex/ambiorix devOpifex/scilis devOpifex/signaculum jrosell/ambhtmx
 
 # Prepare a user
 RUN useradd --create-home --shell /bin/bash user
