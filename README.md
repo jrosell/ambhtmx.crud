@@ -16,8 +16,24 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 **THIS IS A WORK IN PROGRESS, DO NOT USE**
 
+## Deployment options
 
-## Runing the example in Docker
+### Hugging Face Spaces
+
+When you push a repository to a Hugging Face Spaces with the option to deploy Dockerfile and include a Dockerfile,  Hugging Face will start building and running your app in the Space.
+
+To avoid broser's cookies security restrictions, instead of using the version with iframes, better use the direct URL to your Space:
+
+Try the demo here: 
+
+* Direct URL to the deployed app: https://jrosell-ambhtmx-crud.hf.space/
+* User: admin
+* Password: demo
+* Space URL: https://huggingface.co/spaces/jrosell/ambhtmx.crud
+
+
+
+### Runing the example in Docker
 
 You may need to set some environment variables in the .Renviron file:
 
